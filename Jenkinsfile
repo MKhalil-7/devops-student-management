@@ -28,6 +28,7 @@ pipeline {
         stage('DOCKER-BUILD') {
             steps {
                 sh "docker compose build"
+                sh "docker tag student-management-app:latest redfox4ever/student-management-app:latest"
             }
         }
 

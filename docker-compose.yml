@@ -3,7 +3,7 @@ version: "3.9"
 services:
   app:
     build: .
-    container_name: redfox4ever/student-management-app:latest
+    container_name: student-management-app
     ports:
       - "8089:8089"
     environment:
