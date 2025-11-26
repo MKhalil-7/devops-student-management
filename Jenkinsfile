@@ -9,7 +9,7 @@ pipeline {
         stage('GIT') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/redfox4ever/devops-student-management.git',
+                url: 'https://github.com/MKhalil-7/devops-student-management.git',
                 credentialsId: 'jenkins-example-github-pat'
 
             }
