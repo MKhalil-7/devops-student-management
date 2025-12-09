@@ -16,7 +16,7 @@ pipeline {
             steps {
                 git branch: 'main',
                 url: 'https://github.com/MKhalil-7/devops-student-management.git',
-                credentialsId: 'jenkins-example-github-pat'
+
             }
         }
 
@@ -48,7 +48,7 @@ pipeline {
         stage('QUALITY CHECK') {
             steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh "mvn sonar:sonar -Dsonar.projectKey=student-management -Dsonar.host.url=http://192.168.49.2:31000/ -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
+                    sh "mvn sonar:sonar -Dsonar.projectKey=student-management -Dsonar.host.url=http://localhost:9000/ -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
                 }
 
             }
@@ -57,15 +57,15 @@ pipeline {
         stage('DOCKER-BUILD') {
             steps {
                 sh "docker build -t student-management-app ."
-                sh "docker tag student-management-app:latest redfox4ever/student-management-app:latest"
+                sh "docker tag student-management-app:latest mkhalil7777/student-management-app:latest"
             }
         }
 
         stage('DOCKER-PUSH') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push redfox4ever/student-management-app:latest"
+                    sh "docker push mkhalil7777/student-management-app:latest"
                 }
             }
         }
