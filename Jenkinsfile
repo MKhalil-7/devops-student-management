@@ -56,8 +56,13 @@ pipeline {
 
         stage('DOCKER-BUILD') {
             steps {
+                // Build backend image
                 sh "docker build -t student-management-app ."
                 sh "docker tag student-management-app:latest redfox4ever/student-management-app:latest"
+                
+                // Build frontend image
+                sh "docker build -t student-management-frontend ./frontend"
+                sh "docker tag student-management-frontend:latest redfox4ever/student-management-frontend:latest"
             }
         }
 
@@ -66,18 +71,22 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     sh "docker push redfox4ever/student-management-app:latest"
+                    sh "docker push redfox4ever/student-management-frontend:latest"
                 }
             }
         }
 
         stage('KUBERNETES-DEPLOYMENT') {
             steps {
-
+                // Deploy MySQL
                 sh "kubectl apply -f mysql-deployment.yaml --namespace=devops"
                 sh "kubectl wait --for=condition=Available deployment/mysql --timeout=300s -n devops"
 
-
+                // Deploy Spring Boot backend
                 sh "kubectl apply -f spring-deployment.yaml --namespace=devops"
+                
+                // Deploy Angular frontend
+                sh "kubectl apply -f frontend-deployment.yaml --namespace=devops"
             }
         }
         stage('MONITORING-DEPLOYMENT') {
