@@ -86,6 +86,7 @@ pipeline {
                 sh "kubectl apply -f monitoring.yaml -n devops"
                 sh "kubectl rollout restart deployment monitoring -n devops"
             }
+
         }
     }
 }
